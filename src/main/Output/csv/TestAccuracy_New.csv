@@ -1,0 +1,8 @@
+Algorithm,Accuracy Percentage
+LogisticRegression_classifier,59.843137254901954
+MNB_classifier,46.35294117647059
+NaiveBayes_Classifier,53.72549019607843
+SVC_classifier,42.11764705882353
+SGDClassifier_classifier,57.1764705882353
+LinearSVC_classifier,54.98039215686275
+BernoulliNB_classifier,37.254901960784316

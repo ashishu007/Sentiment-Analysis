@@ -4,6 +4,10 @@ import pprint
 import nltk.classify
 import pickle
 import pandas as pd
+from nltk.classify.scikitlearn import SklearnClassifier
+from sklearn.linear_model import LogisticRegression,SGDClassifier
+from sklearn.naive_bayes import MultinomialNB,BernoulliNB
+from sklearn.svm import SVC, LinearSVC, NuSVC
 
 #start replaceTwoOrMore
 def replaceTwoOrMore(s):
@@ -76,11 +80,13 @@ def extract_features(tweet):
     return features
 #end
 
+dircetory = "C:\\Users\\User\\Sentiment-Analysis\\src\\main\\"
+
 #Read the tweets one by one and process it
-inpTweets = csv.reader(open('C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Resources\\full_training_dataset.csv', 'r', encoding = "cp850"))
+inpTweets = csv.reader(open(dircetory + 'Resources\\training_final.csv', 'r', encoding = "cp850"))
 # inpTweets = pd.read_csv("data/full_training_dataset.csv", encoding="")
 print(inpTweets)
-stopWords = getStopWordList('C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Resources\\stopwords.txt')
+stopWords = getStopWordList(dircetory + 'Resources\\stopwords.txt')
 count = 0
 featureList = []
 tweets = []
@@ -103,23 +109,73 @@ featureList = list(set(featureList))
 training_set = nltk.classify.util.apply_features(extract_features, tweets)
 # print("training set", training_set)
 
-# Train the Naive Bayes classifier
+
 print("Train the Naive Bayes classifier")
 NBClassifier = nltk.NaiveBayesClassifier.train(training_set)
-print("train")
+print("Trained NaiveBayes_Classifier")
 
-# save the model to disk
-filename = 'Naive_Bayes.sav'
-pickle.dump(NBClassifier, open("C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Output\\Models\\" + filename, 'wb'))
+filename = 'NaiveBayes_Classifier.sav'
+pickle.dump(NBClassifier, open(dircetory + "Output\\Models\\" + filename, 'wb'))
 
-loaded_model = pickle.load(open("C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Output\\Models\\" + filename, 'rb'))
 
-# Test the classifier
-testTweet = 'This is very bad @ravikiranj, i heard you wrote a new tech post on sentiment analysis. That is ridculous'
-processedTestTweet = processTweet(testTweet)
-# sentiment = NBClassifier.classify(extract_features(getFeatureVector(processedTestTweet, stopWords)))
+print("Training SVC_classifier")
+SVC_classifier = SklearnClassifier(SVC())
+SVC_classifier.train(training_set)
+print("Trained SVC_classifier")
 
-# Load the saved model
-sentiment = loaded_model.classify(extract_features(getFeatureVector(processedTestTweet, stopWords)))
+filename1 = 'SVC_classifier.sav'
+pickle.dump(SVC_classifier, open(dircetory + "Output\\Models\\" + filename1, 'wb'))
 
-print("testTweet = %s, sentiment = %s\n" % (testTweet, sentiment))
+
+# print("Train the Max Entropy classifier")
+# MaxEntClassifier = nltk.classify.maxent.MaxentClassifier.train(training_set, 'GIS', trace=3, \
+#                     encoding=None, labels=None, gaussian_prior_sigma=0, max_iter = 10)
+# print("ME trained")
+
+# filename2 = 'Max_Entropy_new.sav'
+# pickle.dump(MaxEntClassifier, open(dircetory + "Output\\Models\\" + filename2, 'wb'))
+
+
+print("Training Logisitic Regression")
+LogisticRegression_classifier = SklearnClassifier(LogisticRegression())
+LogisticRegression_classifier.train(training_set)
+print("Trained Logisitic Regression")
+
+filename3 = 'LogisticRegression_classifier.sav'
+pickle.dump(LogisticRegression_classifier, open(dircetory + "Output\\Models\\" + filename3, 'wb'))
+
+
+print("Training MNB_classifier")
+MNB_classifier = SklearnClassifier(MultinomialNB())
+MNB_classifier.train(training_set)
+print("Trained MNB_classifier")
+
+filename4 = 'MNB_classifier.sav'
+pickle.dump(MNB_classifier, open(dircetory + "Output\\Models\\" + filename4, 'wb'))
+
+
+print("Training SGDClassifier_classifier")
+SGDClassifier_classifier = SklearnClassifier(SGDClassifier())
+SGDClassifier_classifier.train(training_set)
+print("Trained SGDClassifier_classifier")
+
+filename5 = 'SGDClassifier_classifier.sav'
+pickle.dump(SGDClassifier_classifier, open(dircetory + "Output\\Models\\" + filename5, 'wb'))
+
+
+print("Training LinearSVC_classifier")
+LinearSVC_classifier = SklearnClassifier(LinearSVC())
+LinearSVC_classifier.train(training_set)
+print("Trained LinearSVC_classifier")
+
+filename6 = 'LinearSVC_classifier.sav'
+pickle.dump(LinearSVC_classifier, open(dircetory + "Output\\Models\\" + filename6, 'wb'))
+
+
+print("Training BernoulliNB_classifier")
+BernoulliNB_classifier = SklearnClassifier(BernoulliNB())
+BernoulliNB_classifier.train(training_set)
+print("Trained BernoulliNB_classifier")
+
+filename7 = 'BernoulliNB_classifier.sav'
+pickle.dump(BernoulliNB_classifier, open(dircetory + "Output\\Models\\" + filename7, 'wb'))
