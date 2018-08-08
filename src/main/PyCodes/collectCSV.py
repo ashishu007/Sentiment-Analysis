@@ -18,9 +18,11 @@ time = []
 tweets = []
 ctr = 0 
 
+dircetory = "C:\\Users\\User\\Sentiment-Analysis\\src\\main\\"
+
 for tweet in tweepy.Cursor(api.search,q="#NoConfidenceMotion",count=100,
                            lang="en",
-                           since="2018-07-15").items(100):
+                           since="2018-07-15").items(4000):
     time.append(tweet.created_at)
     temp = tweet.text
     temp1 = re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', 'URL', temp)
@@ -33,4 +35,4 @@ raw_data = {
     "tweets": tweets
 }
 df = pd.DataFrame(raw_data, columns = ["time", "tweets"])
-df.to_csv("NoConfidenceMotion.csv")
+df.to_csv(dircetory + "Output\\csv\\NoConfidenceMotion.csv", index=0)
