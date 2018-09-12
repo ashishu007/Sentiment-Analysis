@@ -54,7 +54,7 @@ def getStopWordList(stopWordListFileName):
 
 #start getfeatureVector
 def getFeatureVector(tweet, stopWords):
-    featureVector = []
+    featureVector = []  
     words = tweet.split()
     for w in words:
         #replace two or more with two occurrences 
@@ -83,7 +83,8 @@ def extract_features(tweet):
 dircetory = "C:\\Users\\User\\Sentiment-Analysis\\src\\main\\"
 
 #Read the tweets one by one and process it
-inpTweets = csv.reader(open(dircetory + 'Resources\\training_final.csv', 'r', encoding = "cp850"))
+# inpTweets = csv.reader(open(dircetory + 'Output\\csv\\NoConfidenceMotion.csv', 'r', encoding = "cp850"))
+inpTweets = csv.reader(open(dircetory + 'Resources\\sms_spam_test.csv', 'r', encoding = "cp850"))
 # inpTweets = pd.read_csv("data/full_training_dataset.csv", encoding="")
 print(inpTweets)
 stopWords = getStopWordList(dircetory + 'Resources\\stopwords.txt')
@@ -103,79 +104,33 @@ for row in inpTweets:
 
 # Remove featureList duplicates
 featureList = list(set(featureList))
-# print("featureList", featureList)
+# print(featureList)
 
-# Generate the training set
-training_set = nltk.classify.util.apply_features(extract_features, tweets)
-# print("training set", training_set)
+# print(tweets)
+# print(extract_features("that class sucks, never attend it"))
 
+testing_set = nltk.classify.util.apply_features(extract_features, tweets)
+# print(testing_set)
+# model_names = ["LogisticRegression_classifier", "MNB_classifier", "NaiveBayes_Classifier", \
+#                 "SVC_classifier", "SGDClassifier_classifier", \
+#                 "LinearSVC_classifier", "BernoulliNB_classifier"]
 
-print("Train the Naive Bayes classifier")
-NBClassifier = nltk.NaiveBayesClassifier.train(training_set)
-print("Trained NaiveBayes_Classifier")
+model_names = ["NaiveBayes_Classifier", "SVC_classifier", "LogisticRegression_classifier",
+                "MNB_classifier", "SGDClassifier_classifier", "LinearSVC_classifier",
+                "BernoulliNB_classifier"]
 
-filename = 'NaiveBayes_Classifier.sav'
-pickle.dump(NBClassifier, open(dircetory + "Output\\Models\\" + filename, 'wb'))
+accuracy_list = []
+for name in model_names:
+    print("Now testing: " + name)
+    classifier = pickle.load(open(dircetory + "Output\\Models\\Spam\\" + name + ".sav", 'rb'))
+    accuracy_percentage = (nltk.classify.accuracy(classifier, testing_set))*100
+    accuracy_list.append(accuracy_percentage)
 
+print(accuracy_list)
+dict1 = {
+    "Algorithm": model_names,
+    "Accuracy Percentage": accuracy_list
+}
 
-print("Training SVC_classifier")
-SVC_classifier = SklearnClassifier(SVC())
-SVC_classifier.train(training_set)
-print("Trained SVC_classifier")
-
-filename1 = 'SVC_classifier.sav'
-pickle.dump(SVC_classifier, open(dircetory + "Output\\Models\\" + filename1, 'wb'))
-
-
-# print("Train the Max Entropy classifier")
-# MaxEntClassifier = nltk.classify.maxent.MaxentClassifier.train(training_set, 'GIS', trace=3, \
-#                     encoding=None, labels=None, gaussian_prior_sigma=0, max_iter = 10)
-# print("ME trained")
-
-# filename2 = 'Max_Entropy_new.sav'
-# pickle.dump(MaxEntClassifier, open(dircetory + "Output\\Models\\" + filename2, 'wb'))
-
-
-print("Training Logisitic Regression")
-LogisticRegression_classifier = SklearnClassifier(LogisticRegression())
-LogisticRegression_classifier.train(training_set)
-print("Trained Logisitic Regression")
-
-filename3 = 'LogisticRegression_classifier.sav'
-pickle.dump(LogisticRegression_classifier, open(dircetory + "Output\\Models\\" + filename3, 'wb'))
-
-
-print("Training MNB_classifier")
-MNB_classifier = SklearnClassifier(MultinomialNB())
-MNB_classifier.train(training_set)
-print("Trained MNB_classifier")
-
-filename4 = 'MNB_classifier.sav'
-pickle.dump(MNB_classifier, open(dircetory + "Output\\Models\\" + filename4, 'wb'))
-
-
-print("Training SGDClassifier_classifier")
-SGDClassifier_classifier = SklearnClassifier(SGDClassifier())
-SGDClassifier_classifier.train(training_set)
-print("Trained SGDClassifier_classifier")
-
-filename5 = 'SGDClassifier_classifier.sav'
-pickle.dump(SGDClassifier_classifier, open(dircetory + "Output\\Models\\" + filename5, 'wb'))
-
-
-print("Training LinearSVC_classifier")
-LinearSVC_classifier = SklearnClassifier(LinearSVC())
-LinearSVC_classifier.train(training_set)
-print("Trained LinearSVC_classifier")
-
-filename6 = 'LinearSVC_classifier.sav'
-pickle.dump(LinearSVC_classifier, open(dircetory + "Output\\Models\\" + filename6, 'wb'))
-
-
-print("Training BernoulliNB_classifier")
-BernoulliNB_classifier = SklearnClassifier(BernoulliNB())
-BernoulliNB_classifier.train(training_set)
-print("Trained BernoulliNB_classifier")
-
-filename7 = 'BernoulliNB_classifier.sav'
-pickle.dump(BernoulliNB_classifier, open(dircetory + "Output\\Models\\" + filename7, 'wb'))
+df = pd.DataFrame(dict1, columns=["Algorithm", "Accuracy Percentage"])
+df.to_csv(dircetory + "Output\\csv\\SpamAccuracy.csv", index=0)

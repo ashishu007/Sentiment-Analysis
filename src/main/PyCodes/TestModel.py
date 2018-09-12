@@ -83,6 +83,7 @@ def extract_features(tweet):
 dircetory = "C:\\Users\\User\\Sentiment-Analysis\\src\\main\\"
 
 #Read the tweets one by one and process it
+# inpTweets = csv.reader(open(dircetory + 'Output\\csv\\NoConfidenceMotion.csv', 'r', encoding = "cp850"))
 inpTweets = csv.reader(open(dircetory + 'Resources\\testing_final.csv', 'r', encoding = "cp850"))
 # inpTweets = pd.read_csv("data/full_training_dataset.csv", encoding="")
 print(inpTweets)
@@ -103,12 +104,19 @@ for row in inpTweets:
 
 # Remove featureList duplicates
 featureList = list(set(featureList))
+# print(featureList)
+
+# print(tweets)
+# print(extract_features("that class sucks, never attend it"))
 
 testing_set = nltk.classify.util.apply_features(extract_features, tweets)
+# print(testing_set)
+# model_names = ["LogisticRegression_classifier", "MNB_classifier", "NaiveBayes_Classifier", \
+#                 "SVC_classifier", "SGDClassifier_classifier", \
+#                 "LinearSVC_classifier", "BernoulliNB_classifier"]
 
-model_names = ["LogisticRegression_classifier", "MNB_classifier", "NaiveBayes_Classifier", \
-                "SVC_classifier", "SGDClassifier_classifier", \
-                "LinearSVC_classifier", "BernoulliNB_classifier"]
+model_names = ["Naive_Bayes"]
+
 accuracy_list = []
 for name in model_names:
     print("Now testing: " + name)
@@ -117,10 +125,10 @@ for name in model_names:
     accuracy_list.append(accuracy_percentage)
 
 print(accuracy_list)
-dict1 = {
-    "Algorithm": model_names,
-    "Accuracy Percentage": accuracy_list
-}
+# dict1 = {
+#     "Algorithm": model_names,
+#     "Accuracy Percentage": accuracy_list
+# }
 
-df = pd.DataFrame(dict1, columns=["Algorithm", "Accuracy Percentage"])
-df.to_csv(dircetory + "Output\\csv\\TestAccuracy_New.csv", index=0)
+# df = pd.DataFrame(dict1, columns=["Algorithm", "Accuracy Percentage"])
+# df.to_csv(dircetory + "Output\\csv\\TestAccuracy_New.csv", index=0)

@@ -77,11 +77,13 @@ def extract_features(tweet):
 #end
 
 #Read the tweets one by one and process it
-inpTweets = csv.reader(open('C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Resources\\full_training_dataset.csv', 'r', encoding = "cp850"))
+inpTweets = csv.reader(open('C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Resources\\training_dataset.csv', 'r', encoding = "cp850"))
 stopWords = getStopWordList('C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Resources\\stopwords.txt')
 count = 0
 featureList = []
 tweets = []
+
+print(inpTweets)
 
 for row in inpTweets:
     # print(row)
@@ -93,23 +95,36 @@ for row in inpTweets:
     tweets.append((featureVector, sentiment))
 #end loop
 
+print("Feature Vector Created")
+
 # Remove featureList duplicates
 featureList = list(set(featureList))
+
 # print("featureList", featureList)
 
 loaded_model = pickle.load(open("C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Output\\Models\\Naive_Bayes.sav", 'rb'))
-df = pd.read_csv("C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Output\\csv\\GST.csv")
+df = pd.read_csv("C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Output\\csv\\NoConfidenceMotion.csv")
 tweets = []
 senti = []
 f = []
+
+print("Model Loaded")
+
+ctr = 0
 for text in df["tweets"]:
     if type(text) != str:
+        continue
+    if len(text) <= 10:
+        print("length very small")
         continue
     processedTestTweet = processTweet(text)
     sentiment = loaded_model.classify(extract_features(getFeatureVector(processedTestTweet, stopWords)))
     tweets.append(text)
     senti.append(sentiment)
     f.append(getFeatureVector(processedTestTweet, stopWords))
+    if (ctr % 100 == 0):
+        print(ctr)
+    ctr += 1
 
 dict1 = {
     "tweets": tweets,
@@ -117,5 +132,6 @@ dict1 = {
     "sentiment": senti
 }
 
+print("CSV")
 df1 = pd.DataFrame(dict1, columns = ["tweets", "features", "sentiment"])
-df1.to_csv("C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Output\\csv\\GST_NB_Full.csv", index=0)
+df1.to_csv("C:\\Users\\User\\Sentiment-Analysis\\src\\main\\Output\\csv\\NoConfidenceMotion_Results.csv", index=0)
